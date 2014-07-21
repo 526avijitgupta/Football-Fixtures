@@ -2,6 +2,7 @@ from lxml import html
 import requests
 
 def find(hometeam, awayteam , length , find_by):
+    flag = False
     for i in range(0,length):
         if(hometeam[i] == find_by or awayteam[i] == find_by):
             print ("%s Vs %s" % (hometeam[i] , awayteam[i]))
@@ -10,6 +11,7 @@ def find(hometeam, awayteam , length , find_by):
         print "Your input did not match any fixtures!"
 
 def important(hometeam, awayteam, length, topTeams):
+    flag = False
     print "The list of important fixtures of the selected league (involving top teams) :\n"
     for i in range(0,length):
         if(hometeam[i] and awayteam[i]) in topTeams:            
@@ -17,11 +19,17 @@ def important(hometeam, awayteam, length, topTeams):
             flag = True
     if(not flag):
         print "Your input did not match any fixtures!"
+
+def chop(userinput):
+    for i in range(0,5):
+        userinput[i] = userinput[i].replace('AS ','')
+        userinput[i] = userinput[i].replace('FC ','')
+        userinput[i] = userinput[i].replace(' FC','')
+        userinput[i] = userinput[i].replace('EA ','')
         
 #This will create a list of home teams:
 
 #This will create a list of away teams
-
 
 #This will create a list of the dates of the fixtures
 #pldate = tree.xpath('//div[@class="module module-team simple home"]/parent::td[@class="team"]/parent::tr[@class="clickable "]/parent::tbody/parent::table[@class="match-table "]/thead/tr[@class="subheader"]/th[@class="comp-date"]/text()')
@@ -116,6 +124,7 @@ if(main == 4):
         #Get the standings in an array
         standings = tree.xpath('//td[@class="fcName"]/a[starts-with(@href, "/en-india/teams/germany/")]/text()')
         topTeams = [standings[i] for i in range(0,5)]
+        chop(topTeams)
         important(blhome,blaway,e,topTeams)
 
     if(choice == 2):    
@@ -138,7 +147,7 @@ if(main == 5):
         #Get the standings in an array
         standings = tree.xpath('//td[@class="fcName"]/a[starts-with(@href, "/en-india/teams/france/")]/text()')
         topTeams = [standings[i] for i in range(0,5)]
-        print topTeams
+        chop(topTeams)
         important(l1home,l1away,f,topTeams)
 
     if(choice == 2):    
@@ -161,7 +170,7 @@ if(main == 6):
         #Get the standings in an array
         standings = tree.xpath('//td[@class="fcName"]/a[starts-with(@href, "/en-india/teams/italy/")]/text()')
         topTeams = [standings[i] for i in range(0,5)]
-        print topTeams
+        chop(topTeams)
         important(sahome,saaway,g,topTeams)
 
     if(choice == 2):    
