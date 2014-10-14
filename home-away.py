@@ -1,12 +1,16 @@
 from lxml import html
 import requests
 
+teamName = []
+
+# Function to 
 def find(hometeam, awayteam , length , find_by):
     flag = False
     for i in range(0,length):
         if(hometeam[i] == find_by or awayteam[i] == find_by):
             print ("%s Vs %s" % (hometeam[i] , awayteam[i]))
             flag = True
+    print "\n"
     if(not flag):
         print "Your input did not match any fixtures!"
 
@@ -17,6 +21,7 @@ def important(hometeam, awayteam, length, topTeams):
         if(hometeam[i] and awayteam[i]) in topTeams:            
             print  ("%s Vs %s" % (hometeam[i] , awayteam[i]))
             flag = True
+    print "\n"
     if(not flag):
         print "Your input did not match any fixtures!"
 
@@ -38,7 +43,7 @@ def chop(userinput):
 
 flag = False
 
-main = int(raw_input("Select the league for which the fixtures for the current calendar year have to be displayed:\n1.UEFA Champions League\n2.English Premier League(EPL)\n3.La Liga\n4.Bundesliga\n5.French Ligue 1\n6.Italian Serie A\n"))
+main = int(raw_input("Select the league for which the fixtures for the current calendar year have to be displayed:1.UEFA Champions League\n2.English Premier League(EPL)\n3.La Liga\n4.Bundesliga\n5.French Ligue 1\n6.Italian Serie A\n"))
 
 if(main == 1):
     print "Loading.."
@@ -50,13 +55,14 @@ if(main == 1):
     choice = int(raw_input("Enter one of the choices from below:\n1.Print the only important fixtures of UCL \n2.Print the UCL fixtures by team\n"))
     if(choice == 1):
            print "Loading.."
-           page = requests.get('http://www.goal.com/en-india/live-scores/standings/date/2014-07-21/tab/all?ICID=OP')
+           page = requests.get('http://www.goal.com/en-india/tables/uefa-champions-league/10')
            tree = html.fromstring(page.text)
-           teamName = tree.xpath('//td[@class="teamName"]/text() ')
-           teamRank = tree.xpath('//td[@class="teamRank"]/text() ')
+           tempTeamName = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/")]/text()')
+           teamRank = tree.xpath('//td[@class="legend position"]/text()')
+           for temp_team in tempTeamName:
+                teamName += [temp_team[1:][:-1]]
            c = len(teamRank)
-           topTeams =[teamRank[i] for i in range(0,c) if(teamRank[i] == "1" or teamRank[i] == "2" or teamRank[i] == "3")]
-
+           topTeams =[teamName[i] for i in range(0,c) if(teamRank[i] == "1" or teamRank[i] == "2" or teamRank[i] == "3")]
            important(uclhome,uclaway,b,topTeams)
 
     if(choice == 2):
@@ -78,7 +84,11 @@ if(main == 2):
         page = requests.get('http://www.goal.com/en-india/results-standings/64/english-premier-league-epl/table?ICID=FX_TN_103')
         tree = html.fromstring(page.text)
         #Get the standings in an array
-        standings = tree.xpath('//td[@class="fcName"]/a[starts-with(@href, "/en-india/teams/england/")]/text()')
+        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/england/")]/text()')
+        ln=len(standings)
+        for i in range(0,ln):
+            standings[i] = standings[i].split("\n")[1][:-1]
+        print standings
         topTeams = [standings[i] for i in range(0,5)]
         important(plhome,plaway,a,topTeams)
 
@@ -97,10 +107,13 @@ if(main == 3):
     choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of La Liga for the current calendar year.\n2.Print the La Liga fixtures by team\n"))
     if(choice == 1):
         print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/results-standings/61/la-liga/table')
+        page = requests.get('http://www.goal.com/en-india/tables/primera-divisi%C3%B3n/7')
         tree = html.fromstring(page.text)
         #Get the standings in an array
-        standings = tree.xpath('//td[@class="fcName"]/a[starts-with(@href, "/en-india/teams/spain/")]/text()')
+        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/spain/")]/text()')
+        ln = len(standings)
+        for i in range(0,ln):
+            standings[i] = standings[i].split("\n")[1][:-1]
         topTeams = [standings[i] for i in range(0,5)]
         important(llhome,llaway,d,topTeams)
 
@@ -119,10 +132,13 @@ if(main == 4):
     choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of BundesLiga for the current calendar year.\n2.Print the BundesLiga fixtures by team\n"))
     if(choice == 1):
         print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/results-standings/47/1-bundesliga/table?ICID=OP')
+        page = requests.get('http://www.goal.com/en-india/tables/bundesliga/9')
         tree = html.fromstring(page.text)
         #Get the standings in an array
-        standings = tree.xpath('//td[@class="fcName"]/a[starts-with(@href, "/en-india/teams/germany/")]/text()')
+        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/germany/")]/text()')
+        ln = len(standings)
+        for i in range(0,ln):
+            standings[i] = standings[i].split("\n")[1][:-1]
         topTeams = [standings[i] for i in range(0,5)]
         chop(topTeams)
         important(blhome,blaway,e,topTeams)
@@ -142,10 +158,13 @@ if(main == 5):
     choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of Ligue 1 for the current calendar year.\n2.Print the Ligue 1 fixtures by team\n"))
     if(choice == 1):
         print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/results-standings/60/ligue-1/table?ICID=OP')
+        page = requests.get('http://www.goal.com/en-india/tables/ligue-1/16')
         tree = html.fromstring(page.text)
         #Get the standings in an array
-        standings = tree.xpath('//td[@class="fcName"]/a[starts-with(@href, "/en-india/teams/france/")]/text()')
+        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/france/")]/text()')
+        ln = len(standings)
+        for i in range(0,ln):
+            standings[i] = standings[i].split("\n")[1][:-1]
         topTeams = [standings[i] for i in range(0,5)]
         chop(topTeams)
         important(l1home,l1away,f,topTeams)
@@ -165,10 +184,13 @@ if(main == 6):
     choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of Serie A for the current calendar year.\n2.Print the Serie A fixtures by team\n"))
     if(choice == 1):
         print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/results-standings/69/serie-a/table?ICID=OP')
+        page = requests.get('http://www.goal.com/en-india/tables/serie-a/13')
         tree = html.fromstring(page.text)
         #Get the standings in an array
-        standings = tree.xpath('//td[@class="fcName"]/a[starts-with(@href, "/en-india/teams/italy/")]/text()')
+        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/italy/")]/text()')
+        ln = len(standings)
+        for i in range(0,ln):
+            standings[i] = standings[i].split("\n")[1][:-1]
         topTeams = [standings[i] for i in range(0,5)]
         chop(topTeams)
         important(sahome,saaway,g,topTeams)
