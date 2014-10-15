@@ -1,4 +1,5 @@
 from lxml import html
+from datetime import datetime
 import requests
 
 teamName = []
@@ -43,8 +44,19 @@ def chop(userinput):
 
 flag = False
 
-main = int(raw_input("Select the league for which the fixtures for the current calendar year have to be displayed:1.UEFA Champions League\n2.English Premier League(EPL)\n3.La Liga\n4.Bundesliga\n5.French Ligue 1\n6.Italian Serie A\n"))
+main = int(raw_input("\nSelect the league for which the fixtures for the current calendar year have to be displayed:\n1.UEFA Champions League\n2.English Premier League(EPL)\n3.La Liga\n4.Bundesliga\n5.French Ligue 1\n6.Italian Serie A\n"))
 
+#Comment -try this
+#
+# main = int(raw_input("""
+#    \nSelect the league for which the fixtures for the current calendar year have to be displayed:\n
+#    1.UEFA Champions League\n
+#    2.English Premier League(EPL)\n
+#    3.La Liga\n
+#    4.Bundesliga\n
+#    5.French Ligue 1\n
+#    6.Italian Serie A\n
+# """
 if(main == 1):
     print "Loading.."
     page = requests.get('http://www.goal.com/en-india/fixtures/uefa-champions-league/10?ICID=FX')
@@ -199,3 +211,52 @@ if(main == 6):
         find_by = raw_input("Enter the team name(starting with a capital letter):\n")
         print("\nThe fixtures for the team you entered for the current season are:\n")
         find(sahome,saaway,g,find_by)
+
+# Yash trials
+page = requests.get('http://www.goal.com/en-india/fixtures/premier-league/8?ICID=TA_TN_133')
+tree = html.fromstring(page.text)
+date_list = tree.xpath('//th[@class="comp-date"]/text()')
+home_list = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
+time_list = tree.xpath('//@data-match-time')
+print date_list
+print home_list
+print time_list
+print "Length of date list is %d" % len(date_list)
+print "Length of home list is %d" % len(home_list)
+print "Length of time list is %d" % len(time_list)
+real_date = []
+for time in time_list:
+    match_details = datetime.fromtimestamp(int(time))
+    temp = {
+        'month':match_details.month,
+        'day':match_details.day,
+        'year':match_details.year,
+        'time':match_details.strftime('%H:%M')
+    }
+    real_date.append(temp)
+
+# The real_date is a list , each index of this list contains a dictionary regarding match timing details , convert numerical month to normal
+# month later ( ie . 10 -- October)
+# The for loop is where all the magic happens
+# @avijit - Challenge Accepted and Completed
+
+# Notes for refactoring
+# All urls can be made modular by converting into constants
+# Better variable names
+# Better Function names
+# An option to show the standings
+
+
+#for time in time_list:
+#    if time >= prev_time and time != time_list[0]:
+#        real_date.append(date_list[counter_date])
+#        real_date_counter += 1
+#        prev_time = time
+#    elif time != time_list[0]:
+#        counter_date += 1
+#        real_date.append(date_list[counter_date])
+#        real_date_counter += 1
+#        prev_time = time
+
+print real_date
+print len(real_date)
