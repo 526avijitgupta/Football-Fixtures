@@ -21,6 +21,8 @@ def important(hometeam, awayteam, length, topTeams):
     for i in range(0,length):
         if(hometeam[i] and awayteam[i]) in topTeams:            
             print  ("%s Vs %s" % (hometeam[i] , awayteam[i]))
+            convert_to_standard_time(real_date[i])
+            # print real_date[i]
             flag = True
     print "\n"
     if(not flag):
@@ -32,6 +34,57 @@ def chop(userinput):
         userinput[i] = userinput[i].replace('FC ','')
         userinput[i] = userinput[i].replace(' FC','')
         userinput[i] = userinput[i].replace('EA ','')
+
+
+def convert_to_standard_time(date):
+    print date['day'],
+    
+    date['month'] = int(date['month'])
+    if (date['month'] == 1):
+        print "January",
+    elif (date['month'] == 2):
+        print "February",
+    elif (date['month'] == 3):
+        print "March",
+    elif (date['month'] == 4):
+        print "April",
+    elif (date['month'] == 5):
+        print "May",
+    elif (date['month'] == 6):
+        print "June",
+    elif (date['month'] == 7):
+        print "July",
+    elif (date['month'] == 8):
+        print "August",
+    elif (date['month'] == 9):
+        print "September",
+    elif (date['month'] == 10):
+        print "October",
+    elif (date['month'] == 11):
+        print "November",
+    elif (date['month'] == 12):
+        print "December",
+    
+    print ", ",
+
+    print date['year'],
+    print "-",
+
+    # print "\n"
+
+    hrs = date['time'].split(":")[0]
+    mins = date['time'].split(":")[1]
+
+    if (int(hrs) <= 12):
+        print date['time'] + "AM"
+    else:
+        hrs = str(int(hrs) - 12)
+        print hrs + ":" + mins + "PM"
+
+    print "\n"
+
+# def show_date():
+    
         
 #This will create a list of home teams:
 
@@ -117,16 +170,32 @@ if(main == 3):
     llaway = tree.xpath('//div[@class="module module-team simple away"]/span/text()')
     d = len(llhome)
     choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of La Liga for the current calendar year.\n2.Print the La Liga fixtures by team\n"))
+    date_list = tree.xpath('//th[@class="comp-date"]/text()')
+    home_list = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
+    time_list = tree.xpath('//@data-match-time')
+    real_date = []
+    for time in time_list:
+        match_details = datetime.fromtimestamp(int(time))
+        temp = {
+        'month':match_details.month,
+        'day':match_details.day,
+        'year':match_details.year,
+        'time':match_details.strftime('%H:%M')
+        }
+        real_date.append(temp)
     if(choice == 1):
         print "Loading.."
         page = requests.get('http://www.goal.com/en-india/tables/primera-divisi%C3%B3n/7')
         tree = html.fromstring(page.text)
         #Get the standings in an array
         standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/spain/")]/text()')
+
         ln = len(standings)
         for i in range(0,ln):
             standings[i] = standings[i].split("\n")[1][:-1]
         topTeams = [standings[i] for i in range(0,5)]
+        topTeamDates = [real_date[i] for i in range(0,5)]
+        print topTeamDates
         important(llhome,llaway,d,topTeams)
 
     if(choice == 2):    
@@ -215,25 +284,13 @@ if(main == 6):
 # Yash trials
 page = requests.get('http://www.goal.com/en-india/fixtures/premier-league/8?ICID=TA_TN_133')
 tree = html.fromstring(page.text)
-date_list = tree.xpath('//th[@class="comp-date"]/text()')
-home_list = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
-time_list = tree.xpath('//@data-match-time')
-print date_list
-print home_list
-print time_list
-print "Length of date list is %d" % len(date_list)
-print "Length of home list is %d" % len(home_list)
-print "Length of time list is %d" % len(time_list)
-real_date = []
-for time in time_list:
-    match_details = datetime.fromtimestamp(int(time))
-    temp = {
-        'month':match_details.month,
-        'day':match_details.day,
-        'year':match_details.year,
-        'time':match_details.strftime('%H:%M')
-    }
-    real_date.append(temp)
+
+# print date_list
+# print home_list
+# print time_list
+# print "Length of date list is %d" % len(date_list)
+# print "Length of home list is %d" % len(home_list)
+# print "Length of time list is %d" % len(time_list)
 
 # The real_date is a list , each index of this list contains a dictionary regarding match timing details , convert numerical month to normal
 # month later ( ie . 10 -- October)
@@ -258,5 +315,6 @@ for time in time_list:
 #        real_date_counter += 1
 #        prev_time = time
 
-print real_date
-print len(real_date)
+# print real_date
+# print real_date[0]['month']
+# print len(real_date)
