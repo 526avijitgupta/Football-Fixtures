@@ -2,8 +2,6 @@ from lxml import html
 from datetime import datetime
 import requests
 
-teamName = []
-
 # Function to find the user input team
 def find(hometeam, awayteam , length , find_by):
     flag = False
@@ -21,7 +19,7 @@ def important(hometeam, awayteam, length, topTeams):
     flag = False
     print "The list of important fixtures of the selected league (involving top teams) :\n"
     for i in range(0,length):
-        if(hometeam[i] and awayteam[i]) in topTeams:            
+        if (hometeam[i] in topTeams and awayteam[i] in topTeams):            
             print  ("%s Vs %s" % (hometeam[i] , awayteam[i]))
             convert_to_standard_time(real_date[i])
             flag = True
@@ -94,12 +92,12 @@ INVALID_MSG = 'Please enter a valid input!'
 
 main = int(raw_input("""
     Select the league for which the fixtures for the current calendar year have to be displayed:
-    1.UEFA Champions League
-    2.English Premier League(EPL)
-    3.La Liga
-    4.Bundesliga
-    5.French Ligue 1
-    6.Italian Serie A
+    1. UEFA Champions League
+    2. English Premier League(EPL)
+    3. La Liga
+    4. Bundesliga
+    5. French Ligue 1
+    6. Italian Serie A
     """))
 
 # Checking for the validity of user input
@@ -146,12 +144,13 @@ if (main <= 6 and main > 0):
 
     choice = int(raw_input("""
         Enter one of the choices from below:
-        1.Print the only important fixtures
-        2.Print the fixtures by team
+        1. Print the only important fixtures of the current league
+        2. Print the fixtures by team
+        3. Print the standings for the league
         """))
 
     # Checking for the validity of user input
-    if (choice <=2 and choice > 0):
+    if (choice <=3 and choice > 0):
 
         print "Loading.."
 
@@ -170,7 +169,7 @@ if (main <= 6 and main > 0):
 
         TABLES_FIXED = 'http://www.goal.com/en-india/tables/'
 
-        if (choice == 1):
+        if (choice == 1 or choice == 3):
 
             if(main == 1):
                 page = requests.get(TABLES_FIXED + UCL_FIXED)
@@ -212,11 +211,13 @@ if (main <= 6 and main > 0):
 
             if (main == 1):
                 teamRank = tree.xpath('//td[@class="legend position"]/text()')
+                teamName = []
                 for temp_team in tempTeamName:
                     teamName += [temp_team[1:][:-1]]
                 topTeams =[teamName[i] for i in range(0,len(teamRank)) if(int(teamRank[i]) <= 3)]
                 topTeamDates = [real_date[i] for i in range(0,3)]
-                important(uclhome,uclaway,total_teams,topTeams)
+                if (choice == 1):
+                    important(uclhome,uclaway,total_teams,topTeams)
             
             else:
                 ln = len(standings)
@@ -224,8 +225,22 @@ if (main <= 6 and main > 0):
                     standings[i] = standings[i].split("\n")[1][:-1]
                 topTeams = [standings[i] for i in range(0,5)]
                 topTeamDates = [real_date[i] for i in range(0,5)]
-                important(team_home,team_away,total_teams,topTeams)
+                if (choice == 1):
+                    important(team_home,team_away,total_teams,topTeams)
+                
+            if (choice == 3):
 
+                print "\nThe league standings are as follows:\n"
+
+                if (main == 1):
+                    for team in teamName:
+                        print str(teamName.index(team) + 1) + ". " + team
+                    
+                else:
+                    for team in standings:
+                        print str(standings.index(team) + 1) + ". " + team
+                    
+                print "\n"
 
         elif (choice == 2):
 
@@ -237,6 +252,7 @@ if (main <= 6 and main > 0):
             else:
                 find(team_home,team_away,total_teams,find_by)
 
+
     else:
         print INVALID_MSG
 
@@ -245,41 +261,8 @@ else:
 
 
 
-
-
-
-# Yash trials
-
-# print date_list
-# print home_list
-# print time_list
-# print "Length of date list is %d" % len(date_list)
-# print "Length of home list is %d" % len(home_list)
-# print "Length of time list is %d" % len(time_list)
-
-# The real_date is a list , each index of this list contains a dictionary regarding match timing details , convert numerical month to normal
-# month later ( ie . 10 -- October)
-# The for loop is where all the magic happens
-# @avijit - Challenge Accepted and Completed
-
 # Notes for refactoring
 # All urls can be made modular by converting into constants
 # Better variable names
 # Better Function names
 # An option to show the standings
-
-
-#for time in time_list:
-#    if time >= prev_time and time != time_list[0]:
-#        real_date.append(date_list[counter_date])
-#        real_date_counter += 1
-#        prev_time = time
-#    elif time != time_list[0]:
-#        counter_date += 1
-#        real_date.append(date_list[counter_date])
-#        real_date_counter += 1
-#        prev_time = time
-
-# print real_date
-# print real_date[0]['month']
-# print len(real_date)
