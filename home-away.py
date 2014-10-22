@@ -4,17 +4,19 @@ import requests
 
 teamName = []
 
-# Function to 
+# Function to find the user input team
 def find(hometeam, awayteam , length , find_by):
     flag = False
     for i in range(0,length):
         if(hometeam[i] == find_by or awayteam[i] == find_by):
             print ("%s Vs %s" % (hometeam[i] , awayteam[i]))
+            convert_to_standard_time(real_date[i])
             flag = True
     print "\n"
     if(not flag):
         print "Your input did not match any fixtures!"
 
+# Function to find the important fixtures
 def important(hometeam, awayteam, length, topTeams):
     flag = False
     print "The list of important fixtures of the selected league (involving top teams) :\n"
@@ -22,12 +24,12 @@ def important(hometeam, awayteam, length, topTeams):
         if(hometeam[i] and awayteam[i]) in topTeams:            
             print  ("%s Vs %s" % (hometeam[i] , awayteam[i]))
             convert_to_standard_time(real_date[i])
-            # print real_date[i]
             flag = True
     print "\n"
     if(not flag):
         print "Your input did not match any fixtures!"
 
+# Function to correct the user input to make it usable
 def chop(userinput):
     for i in range(0,5):
         userinput[i] = userinput[i].replace('AS ','')
@@ -35,7 +37,7 @@ def chop(userinput):
         userinput[i] = userinput[i].replace(' FC','')
         userinput[i] = userinput[i].replace('EA ','')
 
-
+# Function to correct the date and time of the found fixture
 def convert_to_standard_time(date):
     print date['day'],
     
@@ -83,207 +85,170 @@ def convert_to_standard_time(date):
 
     print "\n"
 
-# def show_date():
-    
-        
-#This will create a list of home teams:
 
-#This will create a list of away teams
-
-#This will create a list of the dates of the fixtures
-#pldate = tree.xpath('//div[@class="module module-team simple home"]/parent::td[@class="team"]/parent::tr[@class="clickable "]/parent::tbody/parent::table[@class="match-table "]/thead/tr[@class="subheader"]/th[@class="comp-date"]/text()')
-#This will create a list of the times of the fixtures
-#pltime = tree.xpath('//td[@class="status"]/text() ')
 
 flag = False
 
-main = int(raw_input("\nSelect the league for which the fixtures for the current calendar year have to be displayed:\n1.UEFA Champions League\n2.English Premier League(EPL)\n3.La Liga\n4.Bundesliga\n5.French Ligue 1\n6.Italian Serie A\n"))
+# In case the user enters an invalid input, display this message
+INVALID_MSG = 'Please enter a valid input!'
 
-#Comment -try this
-#
-# main = int(raw_input("""
-#    \nSelect the league for which the fixtures for the current calendar year have to be displayed:\n
-#    1.UEFA Champions League\n
-#    2.English Premier League(EPL)\n
-#    3.La Liga\n
-#    4.Bundesliga\n
-#    5.French Ligue 1\n
-#    6.Italian Serie A\n
-# """
-if(main == 1):
-    print "Loading.."
-    page = requests.get('http://www.goal.com/en-india/fixtures/uefa-champions-league/10?ICID=FX')
-    tree = html.fromstring(page.text)
-    uclhome = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
-    uclaway = tree.xpath('//div[@class="module module-team simple away"]/span/text()')
-    b = len(uclhome)
-    choice = int(raw_input("Enter one of the choices from below:\n1.Print the only important fixtures of UCL \n2.Print the UCL fixtures by team\n"))
-    if(choice == 1):
-           print "Loading.."
-           page = requests.get('http://www.goal.com/en-india/tables/uefa-champions-league/10')
-           tree = html.fromstring(page.text)
-           tempTeamName = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/")]/text()')
-           teamRank = tree.xpath('//td[@class="legend position"]/text()')
-           for temp_team in tempTeamName:
-                teamName += [temp_team[1:][:-1]]
-           c = len(teamRank)
-           topTeams =[teamName[i] for i in range(0,c) if(teamRank[i] == "1" or teamRank[i] == "2" or teamRank[i] == "3")]
-           important(uclhome,uclaway,b,topTeams)
+main = int(raw_input("""
+    Select the league for which the fixtures for the current calendar year have to be displayed:
+    1.UEFA Champions League
+    2.English Premier League(EPL)
+    3.La Liga
+    4.Bundesliga
+    5.French Ligue 1
+    6.Italian Serie A
+    """))
 
-    if(choice == 2):
-           print "Loading.."
-           find_by = raw_input("Enter the team name(starting with a capital letter):\n")
-           print("\nThe fixtures for the team you entered for the current season are:\n")
-           find(uclhome,uclaway,b,find_by)
-        
-if(main == 2):
+# Checking for the validity of user input
+if (main <= 6 and main > 0):
+
     print "Loading.."
-    page = requests.get('http://www.goal.com/en-india/fixtures/premier-league/8')
+
+    FIXTURES_URL = 'http://www.goal.com/en-india/fixtures/'
+    
+    UCL_FIXED = 'uefa-champions-league/10'
+    EPL_FIXED = 'premier-league/8'
+    LL_FIXED = 'primera-divisi%C3%B3n/7'
+    BL_FIXED = 'bundesliga/9'
+    L1_FIXED = 'ligue-1/16'
+    SA_FIXED = 'serie-a/13'
+
+    if(main == 1):
+        page = requests.get(FIXTURES_URL + UCL_FIXED)
+    elif(main == 2):
+        page = requests.get(FIXTURES_URL + EPL_FIXED)
+    elif(main == 3):
+        page = requests.get(FIXTURES_URL + LL_FIXED)
+    elif(main == 4):
+        page = requests.get(FIXTURES_URL + BL_FIXED)
+    elif(main == 5):
+        page = requests.get(FIXTURES_URL + L1_FIXED)
+    elif(main == 6):
+        page = requests.get(FIXTURES_URL + SA_FIXED)
+
     tree = html.fromstring(page.text)
-    plhome = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
-    plaway = tree.xpath('//div[@class="module module-team simple away"]/span/text()')
-    a=len(plhome)
-    choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of EPL for the current calendar year.\n2.Print the EPL fixtures by team\n"))
-    if(choice == 1):
+
+    HOME_TEAM_XPATH = '//div[@class="module module-team simple home"]/span/text()'
+    AWAY_TEAM_XPATH = '//div[@class="module module-team simple away"]/span/text()'
+
+    if(main == 1):
+        uclhome = tree.xpath(HOME_TEAM_XPATH)
+        uclaway = tree.xpath(AWAY_TEAM_XPATH)
+        total_teams = len(uclhome)
+
+    else:
+        team_home = tree.xpath(HOME_TEAM_XPATH)
+        team_away = tree.xpath(AWAY_TEAM_XPATH)
+        total_teams = len(team_home)
+
+    choice = int(raw_input("""
+        Enter one of the choices from below:
+        1.Print the only important fixtures
+        2.Print the fixtures by team
+        """))
+
+    # Checking for the validity of user input
+    if (choice <=2 and choice > 0):
+
         print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/results-standings/64/english-premier-league-epl/table?ICID=FX_TN_103')
-        tree = html.fromstring(page.text)
-        #Get the standings in an array
-        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/england/")]/text()')
-        ln=len(standings)
-        for i in range(0,ln):
-            standings[i] = standings[i].split("\n")[1][:-1]
-        print standings
-        topTeams = [standings[i] for i in range(0,5)]
-        important(plhome,plaway,a,topTeams)
 
-    if(choice == 2):    
-        find_by = raw_input("Enter the team name(starting with a capital letter):\n")
-        print("\nThe fixtures for the team you entered for the current season are:\n")
-        find(plhome,plaway,a,find_by)
+        date_list = tree.xpath('//th[@class="comp-date"]/text()')
+        time_list = tree.xpath('//@data-match-time')
+        real_date = []
+        for time in time_list:
+            match_details = datetime.fromtimestamp(int(time))
+            temp = {
+                'month':match_details.month,
+                'day':match_details.day,
+                'year':match_details.year,
+                'time':match_details.strftime('%H:%M')
+            }
+            real_date.append(temp)
 
-if(main == 3):
-    print "Loading.."
-    page = requests.get('http://www.goal.com/en-india/fixtures/primera-divisi%C3%B3n/7')
-    tree = html.fromstring(page.text)
-    llhome = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
-    llaway = tree.xpath('//div[@class="module module-team simple away"]/span/text()')
-    d = len(llhome)
-    choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of La Liga for the current calendar year.\n2.Print the La Liga fixtures by team\n"))
-    date_list = tree.xpath('//th[@class="comp-date"]/text()')
-    home_list = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
-    time_list = tree.xpath('//@data-match-time')
-    real_date = []
-    for time in time_list:
-        match_details = datetime.fromtimestamp(int(time))
-        temp = {
-        'month':match_details.month,
-        'day':match_details.day,
-        'year':match_details.year,
-        'time':match_details.strftime('%H:%M')
-        }
-        real_date.append(temp)
-    if(choice == 1):
-        print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/tables/primera-divisi%C3%B3n/7')
-        tree = html.fromstring(page.text)
-        #Get the standings in an array
-        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/spain/")]/text()')
+        TABLES_FIXED = 'http://www.goal.com/en-india/tables/'
 
-        ln = len(standings)
-        for i in range(0,ln):
-            standings[i] = standings[i].split("\n")[1][:-1]
-        topTeams = [standings[i] for i in range(0,5)]
-        topTeamDates = [real_date[i] for i in range(0,5)]
-        print topTeamDates
-        important(llhome,llaway,d,topTeams)
+        if (choice == 1):
 
-    if(choice == 2):    
-        find_by = raw_input("Enter the team name(starting with a capital letter):\n")
-        print("\nThe fixtures for the team you entered for the current season are:\n")
-        find(llhome,llaway,d,find_by)
+            if(main == 1):
+                page = requests.get(TABLES_FIXED + UCL_FIXED)
+            elif(main == 2):
+                page = requests.get(TABLES_FIXED + EPL_FIXED)
+            elif(main == 3):
+                page = requests.get(TABLES_FIXED + LL_FIXED)
+            elif(main == 4):
+                page = requests.get(TABLES_FIXED + BL_FIXED)
+            elif(main == 5):
+                page = requests.get(TABLES_FIXED + L1_FIXED)
+            elif(main == 6):
+                page = requests.get(TABLES_FIXED + SA_FIXED)
+           
+            tree = html.fromstring(page.text)
 
-if(main == 4):
-    print "Loading.."
-    page = requests.get('http://www.goal.com/en-india/fixtures/bundesliga/9')
-    tree = html.fromstring(page.text)
-    blhome = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
-    blaway = tree.xpath('//div[@class="module module-team simple away"]/span/text()')
-    e = len(blhome)
-    choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of BundesLiga for the current calendar year.\n2.Print the BundesLiga fixtures by team\n"))
-    if(choice == 1):
-        print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/tables/bundesliga/9')
-        tree = html.fromstring(page.text)
-        #Get the standings in an array
-        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/germany/")]/text()')
-        ln = len(standings)
-        for i in range(0,ln):
-            standings[i] = standings[i].split("\n")[1][:-1]
-        topTeams = [standings[i] for i in range(0,5)]
-        chop(topTeams)
-        important(blhome,blaway,e,topTeams)
+            TEAM_RANKWISE_XPATH = '//td[@class="legend team short"]'
+            UCL_HREF_CONTAINS_XPATH = '/a[starts-with(@href, "/en-india/teams/")]/text()'
+            EPL_HREF_CONTAINS_XPATH = '/a[starts-with(@href, "/en-india/teams/england/")]/text()'
+            LL_HREF_CONTAINS_XPATH = '/a[starts-with(@href, "/en-india/teams/spain/")]/text()'
+            BL_HREF_CONTAINS_XPATH = '/a[starts-with(@href, "/en-india/teams/germany/")]/text()'
+            L1_HREF_CONTAINS_XPATH = '/a[starts-with(@href, "/en-india/teams/france/")]/text()'
+            SA_HREF_CONTAINS_XPATH = '/a[starts-with(@href, "/en-india/teams/italy/")]/text()'
 
-    if(choice == 2):    
-        find_by = raw_input("Enter the team name(starting with a capital letter):\n")
-        print("\nThe fixtures for the team you entered for the current season are:\n")
-        find(blhome,blaway,e,find_by)
+            if (main == 1):
+                tempTeamName = tree.xpath(TEAM_RANKWISE_XPATH + UCL_HREF_CONTAINS_XPATH)
+            elif (main == 2):
+                standings = tree.xpath(TEAM_RANKWISE_XPATH + EPL_HREF_CONTAINS_XPATH)
+            elif (main == 3):
+                standings = tree.xpath(TEAM_RANKWISE_XPATH + LL_HREF_CONTAINS_XPATH)
+            elif (main == 4):
+                standings = tree.xpath(TEAM_RANKWISE_XPATH + BL_HREF_CONTAINS_XPATH)
+            elif (main == 5):
+                standings = tree.xpath(TEAM_RANKWISE_XPATH + L1_HREF_CONTAINS_XPATH)
+            elif (main == 6):
+                standings = tree.xpath(TEAM_RANKWISE_XPATH + SA_HREF_CONTAINS_XPATH)
+           
+            UCL_TEAMRANK_XPATH = '//td[@class="legend position"]/text()'
 
-if(main == 5):
-    print "Loading.."
-    page = requests.get('http://www.goal.com/en-india/fixtures/ligue-1/16')
-    tree = html.fromstring(page.text)
-    l1home = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
-    l1away = tree.xpath('//div[@class="module module-team simple away"]/span/text()')
-    f = len(l1home)
-    choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of Ligue 1 for the current calendar year.\n2.Print the Ligue 1 fixtures by team\n"))
-    if(choice == 1):
-        print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/tables/ligue-1/16')
-        tree = html.fromstring(page.text)
-        #Get the standings in an array
-        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/france/")]/text()')
-        ln = len(standings)
-        for i in range(0,ln):
-            standings[i] = standings[i].split("\n")[1][:-1]
-        topTeams = [standings[i] for i in range(0,5)]
-        chop(topTeams)
-        important(l1home,l1away,f,topTeams)
+            if (main == 1):
+                teamRank = tree.xpath('//td[@class="legend position"]/text()')
+                for temp_team in tempTeamName:
+                    teamName += [temp_team[1:][:-1]]
+                topTeams =[teamName[i] for i in range(0,len(teamRank)) if(int(teamRank[i]) <= 3)]
+                topTeamDates = [real_date[i] for i in range(0,3)]
+                important(uclhome,uclaway,total_teams,topTeams)
+            
+            else:
+                ln = len(standings)
+                for i in range(0,ln):
+                    standings[i] = standings[i].split("\n")[1][:-1]
+                topTeams = [standings[i] for i in range(0,5)]
+                topTeamDates = [real_date[i] for i in range(0,5)]
+                important(team_home,team_away,total_teams,topTeams)
 
-    if(choice == 2):    
-        find_by = raw_input("Enter the team name(starting with a capital letter):\n")
-        print("\nThe fixtures for the team you entered for the current season are:\n")
-        find(l1home,l1away,f,find_by)
 
-if(main == 6):
-    print "Loading.."
-    page = requests.get('http://www.goal.com/en-india/fixtures/serie-a/13')
-    tree = html.fromstring(page.text)
-    sahome = tree.xpath('//div[@class="module module-team simple home"]/span/text()')
-    saaway = tree.xpath('//div[@class="module module-team simple away"]/span/text()')
-    g = len(sahome)
-    choice = int(raw_input("Enter one of the choices from below:\n1.Print the important fixtures of Serie A for the current calendar year.\n2.Print the Serie A fixtures by team\n"))
-    if(choice == 1):
-        print "Loading.."
-        page = requests.get('http://www.goal.com/en-india/tables/serie-a/13')
-        tree = html.fromstring(page.text)
-        #Get the standings in an array
-        standings = tree.xpath('//td[@class="legend team short"]/a[starts-with(@href, "/en-india/teams/italy/")]/text()')
-        ln = len(standings)
-        for i in range(0,ln):
-            standings[i] = standings[i].split("\n")[1][:-1]
-        topTeams = [standings[i] for i in range(0,5)]
-        chop(topTeams)
-        important(sahome,saaway,g,topTeams)
+        elif (choice == 2):
 
-    if(choice == 2):    
-        find_by = raw_input("Enter the team name(starting with a capital letter):\n")
-        print("\nThe fixtures for the team you entered for the current season are:\n")
-        find(sahome,saaway,g,find_by)
+            find_by = raw_input("Enter the team name(starting with a capital letter):\n")
+            print("\nThe fixtures for the team you entered for the current season are:\n")
+
+            if (main == 1):
+                find(uclhome,uclaway,total_teams,find_by)
+            else:
+                find(team_home,team_away,total_teams,find_by)
+
+    else:
+        print INVALID_MSG
+
+else:
+    print INVALID_MSG
+
+
+
+
+
 
 # Yash trials
-page = requests.get('http://www.goal.com/en-india/fixtures/premier-league/8?ICID=TA_TN_133')
-tree = html.fromstring(page.text)
 
 # print date_list
 # print home_list
