@@ -3,5 +3,5 @@
 # Use this file in this manner:
 # pip install -r requirements.txt
 
-selenium==2.42.1
+requests==2.4.3
 lxml==2.3.2
