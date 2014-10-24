@@ -1,0 +1,7 @@
+# The requirements.txt file automatically takes care of all the requirements for the script to run.
+
+# Use this file in this manner:
+# pip install -r requirements.txt
+
+selenium==2.42.1
+lxml==2.3.2

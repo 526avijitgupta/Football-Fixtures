@@ -35,10 +35,6 @@ Requirements:
 
 Python 2.7
 
-The following python libraries are required for the application to run:
+Use requirements.txt to install the necessary packages:
+pip install -r requirements.txt
 
-1. requests
-
-2. lxml
-
-Please install them if manually if they are not installed!

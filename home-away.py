@@ -90,6 +90,7 @@ flag = False
 # In case the user enters an invalid input, display this message
 INVALID_MSG = 'Please enter a valid input!'
 
+# Getting the user input for choosing the league
 main = int(raw_input("""
     Select the league for which the fixtures for the current calendar year have to be displayed:
     1. UEFA Champions League
@@ -142,6 +143,7 @@ if (main <= 6 and main > 0):
         team_away = tree.xpath(AWAY_TEAM_XPATH)
         total_teams = len(team_home)
 
+    # Getting the user input for the functionality needed
     choice = int(raw_input("""
         Enter one of the choices from below:
         1. Print the only important fixtures of the current league
