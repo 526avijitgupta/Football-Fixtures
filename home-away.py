@@ -1,6 +1,7 @@
 from lxml import html
 from datetime import datetime
 import requests
+from titlecase import titlecase
 
 # Function to find the user input team
 def find(hometeam, awayteam , length , find_by):
@@ -19,7 +20,7 @@ def important(hometeam, awayteam, length, topTeams):
     flag = False
     print "The list of important fixtures of the selected league (involving top teams) :\n"
     for i in range(0,length):
-        if (hometeam[i] in topTeams and awayteam[i] in topTeams):            
+        if (hometeam[i] in topTeams and awayteam[i] in topTeams):
             print  ("%s Vs %s" % (hometeam[i] , awayteam[i]))
             convert_to_standard_time(real_date[i])
             flag = True
@@ -38,7 +39,7 @@ def chop(userinput):
 # Function to correct the date and time of the found fixture
 def convert_to_standard_time(date):
     print date['day'],
-    
+
     date['month'] = int(date['month'])
     if (date['month'] == 1):
         print "January",
@@ -64,7 +65,7 @@ def convert_to_standard_time(date):
         print "November",
     elif (date['month'] == 12):
         print "December",
-    
+
     print ", ",
 
     print date['year'],
@@ -82,8 +83,6 @@ def convert_to_standard_time(date):
         print hrs + ":" + mins + "PM"
 
     print "\n"
-
-
 
 flag = False
 
@@ -107,7 +106,7 @@ if (main <= 6 and main > 0):
     print "Loading.."
 
     FIXTURES_URL = 'http://www.goal.com/en-india/fixtures/'
-    
+
     UCL_FIXED = 'uefa-champions-league/10'
     EPL_FIXED = 'premier-league/8'
     LL_FIXED = 'primera-divisi%C3%B3n/7'
@@ -185,7 +184,7 @@ if (main <= 6 and main > 0):
                 page = requests.get(TABLES_FIXED + L1_FIXED)
             elif(main == 6):
                 page = requests.get(TABLES_FIXED + SA_FIXED)
-           
+
             tree = html.fromstring(page.text)
 
             TEAM_RANKWISE_XPATH = '//td[@class="legend team short"]'
@@ -208,7 +207,7 @@ if (main <= 6 and main > 0):
                 standings = tree.xpath(TEAM_RANKWISE_XPATH + L1_HREF_CONTAINS_XPATH)
             elif (main == 6):
                 standings = tree.xpath(TEAM_RANKWISE_XPATH + SA_HREF_CONTAINS_XPATH)
-           
+
             UCL_TEAMRANK_XPATH = '//td[@class="legend position"]/text()'
 
             if (main == 1):
@@ -220,7 +219,7 @@ if (main <= 6 and main > 0):
                 topTeamDates = [real_date[i] for i in range(0,3)]
                 if (choice == 1):
                     important(uclhome,uclaway,total_teams,topTeams)
-            
+
             else:
                 ln = len(standings)
                 for i in range(0,ln):
@@ -229,7 +228,7 @@ if (main <= 6 and main > 0):
                 topTeamDates = [real_date[i] for i in range(0,5)]
                 if (choice == 1):
                     important(team_home,team_away,total_teams,topTeams)
-                
+
             if (choice == 3):
 
                 print "\nThe league standings are as follows:\n"
@@ -237,16 +236,17 @@ if (main <= 6 and main > 0):
                 if (main == 1):
                     for team in teamName:
                         print str(teamName.index(team) + 1) + ". " + team
-                    
+
                 else:
                     for team in standings:
                         print str(standings.index(team) + 1) + ". " + team
-                    
+
                 print "\n"
 
         elif (choice == 2):
 
-            find_by = raw_input("Enter the team name(starting with a capital letter):\n")
+            # Never thought converting to title case would be so easy!
+            find_by = titlecase(str(raw_input("Enter the team name(omit words like FC, AS, CF etc.):\n")))
             print("\nThe fixtures for the team you entered for the current season are:\n")
 
             if (main == 1):
