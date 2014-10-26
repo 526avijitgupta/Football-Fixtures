@@ -36,5 +36,14 @@ Requirements:
 Python 2.7
 
 Use requirements.txt to install the necessary packages:
+
 pip install -r requirements.txt
 
+Known Isssues:
+==================
+
+Traceback (most recent call last):
+....
+requests.exceptions.ConnectionError: ('Connection aborted.', gaierror(-2, 'Name or service not known'))
+
+If the above error is encountered, it could be due to a bad internet connection. Please check your internet connection and re-run the script.
