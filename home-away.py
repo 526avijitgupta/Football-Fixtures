@@ -260,11 +260,3 @@ if (main <= 6 and main > 0):
 
 else:
     print INVALID_MSG
-
-
-
-# Notes for refactoring
-# All urls can be made modular by converting into constants
-# Better variable names
-# Better Function names
-# An option to show the standings
