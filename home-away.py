@@ -4,11 +4,13 @@ import requests
 from titlecase import titlecase
 
 # Function to find the user input team
-def find(hometeam, awayteam , length , find_by):
+
+
+def find(hometeam, awayteam, length, find_by):
     flag = False
-    for i in range(0,length):
+    for i in range(0, length):
         if(hometeam[i] == find_by or awayteam[i] == find_by):
-            print ("%s Vs %s" % (hometeam[i] , awayteam[i]))
+            print ("%s Vs %s" % (hometeam[i], awayteam[i]))
             convert_to_standard_time(real_date[i])
             flag = True
     print "\n"
@@ -16,12 +18,14 @@ def find(hometeam, awayteam , length , find_by):
         print "Your input did not match any fixtures!"
 
 # Function to find the important fixtures
+
+
 def important(hometeam, awayteam, length, topTeams):
     flag = False
     print "The list of important fixtures of the selected league (involving top teams) :\n"
-    for i in range(0,length):
+    for i in range(0, length):
         if (hometeam[i] in topTeams and awayteam[i] in topTeams):
-            print  ("%s Vs %s" % (hometeam[i] , awayteam[i]))
+            print ("%s Vs %s" % (hometeam[i], awayteam[i]))
             convert_to_standard_time(real_date[i])
             flag = True
     print "\n"
@@ -29,14 +33,18 @@ def important(hometeam, awayteam, length, topTeams):
         print "Your input did not match any fixtures!"
 
 # Function to correct the user input to make it usable
+
+
 def chop(userinput):
-    for i in range(0,5):
-        userinput[i] = userinput[i].replace('AS ','')
-        userinput[i] = userinput[i].replace('FC ','')
-        userinput[i] = userinput[i].replace(' FC','')
-        userinput[i] = userinput[i].replace('EA ','')
+    for i in range(0, 5):
+        userinput[i] = userinput[i].replace('AS ', '')
+        userinput[i] = userinput[i].replace('FC ', '')
+        userinput[i] = userinput[i].replace(' FC', '')
+        userinput[i] = userinput[i].replace('EA ', '')
 
 # Function to correct the date and time of the found fixture
+
+
 def convert_to_standard_time(date):
     print date['day'],
 
@@ -151,7 +159,7 @@ if (main <= 6 and main > 0):
         """))
 
     # Checking for the validity of user input
-    if (choice <=3 and choice > 0):
+    if (choice <= 3 and choice > 0):
 
         print "Loading.."
 
@@ -161,10 +169,10 @@ if (main <= 6 and main > 0):
         for time in time_list:
             match_details = datetime.fromtimestamp(int(time))
             temp = {
-                'month':match_details.month,
-                'day':match_details.day,
-                'year':match_details.year,
-                'time':match_details.strftime('%H:%M')
+                'month': match_details.month,
+                'day': match_details.day,
+                'year': match_details.year,
+                'time': match_details.strftime('%H:%M')
             }
             real_date.append(temp)
 
@@ -196,17 +204,23 @@ if (main <= 6 and main > 0):
             SA_HREF_CONTAINS_XPATH = '/a[starts-with(@href, "/en-india/teams/italy/")]/text()'
 
             if (main == 1):
-                tempTeamName = tree.xpath(TEAM_RANKWISE_XPATH + UCL_HREF_CONTAINS_XPATH)
+                tempTeamName = tree.xpath(
+                    TEAM_RANKWISE_XPATH + UCL_HREF_CONTAINS_XPATH)
             elif (main == 2):
-                standings = tree.xpath(TEAM_RANKWISE_XPATH + EPL_HREF_CONTAINS_XPATH)
+                standings = tree.xpath(
+                    TEAM_RANKWISE_XPATH + EPL_HREF_CONTAINS_XPATH)
             elif (main == 3):
-                standings = tree.xpath(TEAM_RANKWISE_XPATH + LL_HREF_CONTAINS_XPATH)
+                standings = tree.xpath(
+                    TEAM_RANKWISE_XPATH + LL_HREF_CONTAINS_XPATH)
             elif (main == 4):
-                standings = tree.xpath(TEAM_RANKWISE_XPATH + BL_HREF_CONTAINS_XPATH)
+                standings = tree.xpath(
+                    TEAM_RANKWISE_XPATH + BL_HREF_CONTAINS_XPATH)
             elif (main == 5):
-                standings = tree.xpath(TEAM_RANKWISE_XPATH + L1_HREF_CONTAINS_XPATH)
+                standings = tree.xpath(
+                    TEAM_RANKWISE_XPATH + L1_HREF_CONTAINS_XPATH)
             elif (main == 6):
-                standings = tree.xpath(TEAM_RANKWISE_XPATH + SA_HREF_CONTAINS_XPATH)
+                standings = tree.xpath(
+                    TEAM_RANKWISE_XPATH + SA_HREF_CONTAINS_XPATH)
 
             UCL_TEAMRANK_XPATH = '//td[@class="legend position"]/text()'
 
@@ -215,19 +229,20 @@ if (main <= 6 and main > 0):
                 teamName = []
                 for temp_team in tempTeamName:
                     teamName += [temp_team[1:][:-1]]
-                topTeams =[teamName[i] for i in range(0,len(teamRank)) if(int(teamRank[i]) <= 3)]
-                topTeamDates = [real_date[i] for i in range(0,3)]
+                topTeams = [teamName[i]
+                            for i in range(0, len(teamRank)) if(int(teamRank[i]) <= 3)]
+                topTeamDates = [real_date[i] for i in range(0, 3)]
                 if (choice == 1):
-                    important(uclhome,uclaway,total_teams,topTeams)
+                    important(uclhome, uclaway, total_teams, topTeams)
 
             else:
                 ln = len(standings)
-                for i in range(0,ln):
+                for i in range(0, ln):
                     standings[i] = standings[i].split("\n")[1][:-1]
-                topTeams = [standings[i] for i in range(0,5)]
-                topTeamDates = [real_date[i] for i in range(0,5)]
+                topTeams = [standings[i] for i in range(0, 5)]
+                topTeamDates = [real_date[i] for i in range(0, 5)]
                 if (choice == 1):
-                    important(team_home,team_away,total_teams,topTeams)
+                    important(team_home, team_away, total_teams, topTeams)
 
             if (choice == 3):
 
@@ -246,14 +261,15 @@ if (main <= 6 and main > 0):
         elif (choice == 2):
 
             # Never thought converting to title case would be so easy!
-            find_by = titlecase(str(raw_input("Enter the team name(omit words like FC, AS, CF etc.):\n")))
-            print("\nThe fixtures for the team you entered for the current season are:\n")
+            find_by = titlecase(
+                str(raw_input("Enter the team name(omit words like FC, AS, CF etc.):\n")))
+            print(
+                "\nThe fixtures for the team you entered for the current season are:\n")
 
             if (main == 1):
-                find(uclhome,uclaway,total_teams,find_by)
+                find(uclhome, uclaway, total_teams, find_by)
             else:
-                find(team_home,team_away,total_teams,find_by)
-
+                find(team_home, team_away, total_teams, find_by)
 
     else:
         print INVALID_MSG
