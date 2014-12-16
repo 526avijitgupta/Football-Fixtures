@@ -12,7 +12,7 @@ A python script which scraps data from the web to keep you updated with the upco
 ### Requirements:  
 
 Use requirements.txt to install the necessary packages, in the following manner:  
-`pip install -r requirements.txt`  
+`sudo pip install -r requirements.txt`  
 
 ### Description:  
 
