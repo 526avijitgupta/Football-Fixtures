@@ -49,6 +49,7 @@ def convert_to_standard_time(date):
     print date['day'],
 
     date['month'] = int(date['month'])
+    # Fix the below part, use a better approach
     if (date['month'] == 1):
         print "January",
     elif (date['month'] == 2):
